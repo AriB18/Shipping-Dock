@@ -5,6 +5,7 @@ Management System
 This project simulates a complete port management database system inspired by Adani Ports, India’s largest integrated port and logistics operator. It was developed as part of a university assignment to demonstrate relational database design, normalization, SQL queries, and schema implementation.
 
 **📦 Project Overview:**
+
 The system manages the operations of a shipping dock, including:
 
 Shipments and shipment items
