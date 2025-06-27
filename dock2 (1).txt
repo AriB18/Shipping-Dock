@@ -1,0 +1,215 @@
+drop table shipment CASCADE;
+drop table shipmentitem CASCADE;
+drop table product CASCADE;
+drop table employee CASCADE;
+drop table dock CASCADE;
+drop table dockreservation CASCADE;
+drop table warehouse CASCADE;
+drop table warehouseinventory CASCADE;
+drop table maintenancelog CASCADE;
+drop table carrier CASCADE;
+drop table ERD CASCADE;
+
+
+create Table shipment
+	(	shipmentid	INT NOT NULL,
+		shipmentdate	INT, 	
+		arrivaldate	VARCHAR (30),		
+		departuredate	VARCHAR (30),			
+		carrierid	INT,
+		shippingstatus	VARCHAR(200),
+		CONSTRAINT shipment_pk PRIMARY KEY (shipmentid),
+		CONSTRAINT di_table_shipment_shipmentid check (shipmentid >= 150000 AND shipmentid <= 159999),
+		CONSTRAINT di_table_shipment_arrivaldate check ((arrivaldate is Null) OR (arrivaldate >= departuredate))
+		
+);
+
+insert into shipment values ('151523','2023','03/10/2023','02/10/2023','065478','shipped');
+insert into shipment values ('155424','2022','10/10/2023','09/10/2023','012549','not shipped');
+insert into shipment values ('158427','2021','15/07/2023','10/07/2023','012369','shipped');
+insert into shipment values ('159624','2022','5/08/2023','2/08/2023','089632','not shipped');
+insert into shipment values ('153525','2023','10/09/2023','04/09/2023','014789','shipped');
+
+
+create table shipmentitem
+	(	shipmentitemid	INT,
+		shipmentid	INT, 			
+		quantity	INT,			
+		unitprice	DECIMAL(10, 4),
+		CONSTRAINT shipmentitem_pk PRIMARY KEY (shipmentitemid),		
+		CONSTRAINT shipmentitemFK FOREIGN KEY (shipmentid) 
+                                                     REFERENCES shipment ON DELETE CASCADE,
+		CONSTRAINT di_table_shipmentitem_shipmentitemid check (shipmentitemid >= 200000 AND shipmentid <= 299999),
+		CONSTRAINT di_table_shipmentitem_quantity check ((quantity is Not Null) AND (quantity > 0))
+);
+
+insert into shipmentitem values ('257543','155424','1500','50.2');
+insert into shipmentitem values ('275224','155424','1600','52.6');
+insert into shipmentitem values ('269427','151523','1700','54.1');
+insert into shipmentitem values ('219124','153525','1800','56.5');
+insert into shipmentitem values ('293325','159624','1900','58.7');
+
+create table product
+	(	productid	INT,
+		productname	VARCHAR(200), 	
+		description	TEXT,		
+		weight		DECIMAL(10, 2),			
+		dimension	VARCHAR(50),
+		CONSTRAINT product_pk PRIMARY KEY (productid),
+		CONSTRAINT di_table_product_productname check (productname is Not Null),
+		CONSTRAINT di_table_product_weight check (weight >= 0.1)
+);
+
+insert into product values ('351143','Football','White colour with Yellow and Blue Strips','250','22');
+insert into product values ('371224','Shoes','Nike Shoes','500','6*28');
+insert into product values ('368927','Helmet','Full Face Helmets','900','20*25');
+insert into product values ('319524','Safety Equipments','knee pads','150','7*11');
+insert into product values ('394825','T-shirt','Jersey for Football','150','105*112');
+
+create table employee
+	(	employeeid	INT Not Null,
+		employeename	VARCHAR(100) Not Null, 	
+		gender		VARCHAR(50),					
+		contactno	INT Not Null,
+		emailid		VARCHAR(100),
+		address		VARCHAR(100) Not Null,
+		jobposition	VARCHAR(50),
+		managerid	INT,
+		CONSTRAINT employee_pk PRIMARY KEY (employeeid),
+		CONSTRAINT employee_FK FOREIGN KEY (managerid)
+							REFERENCES employee,
+		CONSTRAINT di_table_employee_employeeid check ((employeeid > 450000) and (employeeid < 499999)),
+		CONSTRAINT di_table_employee_contactno check ((contactno >= 100000000) and (contactno <= 999999999))
+);
+
+CREATE VIEW EMP AS
+    SELECT employeeid as id, employeename as name, gender as sex, contactno as number, emailid as E_id, address, jobposition as position, managerid
+    FROM employee;
+
+insert into employee values ('451641','Ross','Male','0548947845','rossgeller@gmail.com','21 barrack st','Manager', Null);
+insert into employee values ('472624','Chandler','Male','0498765894','chandlerbing@gmail.com','28 B sussex st','Data Analyst','451641');
+insert into employee values ('464821','Joey','Male','0496523459','joeytribbiani@gmail.com','46/21 abercrombie st','Marketer','451641');
+insert into employee values ('458525','Monica','Female','0649784612','monicageller@gmail.com','36 Goulburn st','Marketing Assistant','464821');
+insert into employee values ('497982','Rachel','Female','0479123456','rachelgreen@gmail.com','96 carlton st','Digital Marketer','464821');
+insert into employee values ('479532','Phoebe','Female','0942579462','phoebebuffay@gmail.com','45 pitt st','Maintenance Manager','451641');
+
+create table dock
+	(	dockid		INT,
+		dockname	VARCHAR(100), 	
+		docktype	VARCHAR(50),		
+		location	VARCHAR(50),			
+		capacity	INT NOT NULL,
+		CONSTRAINT dock_pk PRIMARY KEY (dockid),
+		CONSTRAINT di_table_dock_dockid check ((dockid >= 570000) and (dockid <= 579999))
+		
+);
+
+insert into dock values ('571489','sydney dock','Open Dock','Sydney','60');
+insert into dock values ('571479','Melbourne Dock','Sawtooth Loading Dock','Melbourne','50');
+insert into dock values ('578259','Adelaide Dock','Open Dock','Adelaide','40');
+insert into dock values ('579159','Perth Dock','Sawtooth Loading Dock','Perth','30');
+insert into dock values ('574249','Canberra Dock','Open Dock','Canberra','20');
+
+create table dockreservation
+	(	reservationid		INT,
+		dockid			INT, 	
+		shipmentid		INT,		
+		reservationdate		VARCHAR(20),			
+		status			TEXT,
+		CONSTRAINT dockreservation_pk PRIMARY KEY (reservationid),
+		CONSTRAINT dockreservationfk FOREIGN KEY (dockid) REFERENCES dock ON DELETE CASCADE,
+		CONSTRAINT dockreservation_fk FOREIGN KEY (shipmentid)
+							REFERENCES shipment,
+		CONSTRAINT di_table_dockreservation_reservationid check ((reservationid >= 640000) and (reservationid <= 649999))
+);
+
+insert into dockreservation values ('649586','571489','151523','02/05/2023','Arrived');
+insert into dockreservation values ('649216','579159','159624','15/04/2023','Confirmed but Not Arrived');
+insert into dockreservation values ('649752','571479','151523','21/05/2023','Awaiting Confirmation');
+insert into dockreservation values ('644978','574249','158427','30/01/2023','Arrived');
+insert into dockreservation values ('647196','578259','159624','18/04/2023','Departed');
+
+create table warehouse
+	(	warehouseid		INT,
+		warehousename		VARCHAR(50), 	
+		warlocation		VARCHAR(100) NOT NULL,		
+		managername		VARCHAR(50),			
+		managercontactno	INT,
+		CONSTRAINT warehouse_pk PRIMARY KEY (warehouseid),
+		CONSTRAINT di_table_warehouse_managercontactno check ((managercontactno >= 10000000) and (managercontactno <= 99999999)),
+		CONSTRAINT di_table_warehouse_warehouseid check ((warehouseid >= 710000) and (warehouseid <= 780000))
+
+);
+
+insert into warehouse values ('749658','Sydney Warehouse','Sydney','Son','056948525');
+insert into warehouse values ('779456','Melbourne Warehouse','Melbourne','Aditi','079468989');
+insert into warehouse values ('715978','Adelaide Warehouse','Adelaide','Yukta','023456789');
+insert into warehouse values ('736978','Perth Warehouse','Perth','Insha','047896214');
+insert into warehouse values ('714796','Canberra Warehouse','Canberra','Mohammad','014785236');
+
+create table warehouseinventory
+	(	inventoryid		INT NOT NULL,
+		warehouseid		INT, 	
+		productid		INT,		
+		quantity		INT,			
+		CONSTRAINT warehouseinventory_pk PRIMARY KEY (inventoryid),
+		CONSTRAINT warehouseinventoryfk FOREIGN KEY (warehouseid) REFERENCES warehouse,
+		CONSTRAINT warehouseinventory_fk FOREIGN KEY (productid) REFERENCES product,
+		CONSTRAINT di_table_warehouseinventory_inventoryid check ((inventoryid >= 810000) and (inventoryid <= 880000))
+);
+
+insert into warehouseinventory values ('826159','715978','351143','500');
+insert into warehouseinventory values ('812548','736978','319524','600');
+insert into warehouseinventory values ('862511','714796','371224','700');
+insert into warehouseinventory values ('864984','749658','394825','800');
+insert into warehouseinventory values ('854515','779456','368927','900');
+
+create table maintenancelog
+	(	logid			INT,
+		dockid			INT, 	
+		maintenancedate		Date,		
+		description		Text,			
+		cost			Decimal(12, 5),
+		CONSTRAINT maintenancelog_pk PRIMARY KEY (logid),
+		CONSTRAINT maintenancelog_fk FOREIGN KEY (dockid) REFERENCES dock,
+		CONSTRAINT di_table_maintenancelog_logid check ((logid >= 940000) and (logid <= 970000))
+
+);
+
+insert into maintenancelog values ('949658','579159','01/10/2023','1500');
+insert into maintenancelog values ('949878','571489','03/10/2023','1600');
+insert into maintenancelog values ('946978','571479','05/10/2023','1700');
+insert into maintenancelog values ('965785','574249','07/10/2023','1800');
+insert into maintenancelog values ('969585','578259','09/10/2023','1900');
+
+create table carrier
+	(	carrierid		INT,
+		carriername		VARCHAR(50), 	
+		gender			VARCHAR(50),		
+		address			Text,			
+		contactno		INT,
+		age			INT,
+		CONSTRAINT carrier_pk PRIMARY KEY (carrierid),
+		CONSTRAINT di_table_carrier_carrierid check ((carrierid >= 12000) and (carrierid <= 90000)),
+		CONSTRAINT di_table_carrier_contactno check ((contactno >= 1000000) and (contactno < 2000000))
+);
+
+insert into carrier values ('065478','Ted','Male','25 Charles St','1123654','28');
+insert into carrier values ('012549','Barney','Male','15 B Charles St','1587489','29');
+insert into carrier values ('012369','Marshal','Male','30 Parker St','1563212','30');
+insert into carrier values ('089632','Robin','Female','34 Richmond St','1212545','28');
+insert into carrier values ('014789','Lily','Female','72 Charlotte St','1236999','30');
+
+Create table ERD
+(		employeeid			INT Not Null,
+		reservationid		INT NOT NULL,
+		CONSTRAINT ERD_pk PRIMARY KEY (employeeid, reservationid),
+		CONSTRAINT ERD_fk FOREIGN KEY (employeeid) REFERENCES employee,
+		CONSTRAINT ERDfk FOREIGN KEY (reservationid) REFERENCES dockreservation
+);
+
+insert into ERD values ('451641','649586');
+insert into ERD values ('458525','649216');
+insert into ERD values ('451641','649752');
+insert into ERD values ('497982','649752');
+insert into ERD values ('458525','649586');
