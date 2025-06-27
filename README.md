@@ -8,9 +8,9 @@ This project simulates a complete port management database system inspired by Ad
 
 The system manages the operations of a shipping dock, including:
 
-Shipments and shipment items
+- Shipments and shipment items
 
-Dock reservations and warehouse logistics
+- Dock reservations and warehouse logistics
 
 Employee management and carrier details
 
